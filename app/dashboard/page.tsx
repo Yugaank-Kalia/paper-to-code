@@ -18,18 +18,20 @@ import {
   FileDown,
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Dashboard — paper-to-code",
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  return {
     title: "Dashboard — paper-to-code",
-    images: [{ url: "/dashboard.png", width: 1280, height: 720, alt: "paper-to-code dashboard" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Dashboard — paper-to-code",
-    images: ["/dashboard.png"],
-  },
-};
+    openGraph: {
+      title: "Dashboard — paper-to-code",
+      images: [{ url: "/dashboard.png", width: 1280, height: 720, alt: "paper-to-code dashboard" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Dashboard — paper-to-code",
+      images: ["/dashboard.png"],
+    },
+  };
+}
 
 export default async function DashboardPage() {
   const result = await getUserPapers();
@@ -69,7 +71,7 @@ export default async function DashboardPage() {
 
           {/* Papers Grid */}
           {papers.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               {papers.map((paper) => (
                 <Card key={paper.id} className="flex flex-col h-full border-border/50 bg-card/50 backdrop-blur-xs transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
                   <CardHeader className="pb-3">
@@ -79,7 +81,7 @@ export default async function DashboardPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <CardTitle className="text-base leading-snug line-clamp-2">
-                          {paper.title || "Untitled Paper"}
+                          {paper.title || paper.source}
                         </CardTitle>
                         {paper.source && (
                           <CardDescription className="mt-1 flex items-center gap-1 text-xs">
@@ -92,7 +94,8 @@ export default async function DashboardPage() {
                     </div>
                   </CardHeader>
 
-                  <CardContent className="flex-1 pt-0 space-y-3">
+                  <CardContent className="flex-1 pt-0 flex flex-col">
+                    <div className="flex-1 space-y-3">
                     {/* Authors */}
                     {paper.authors.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
@@ -100,7 +103,7 @@ export default async function DashboardPage() {
                           <Badge
                             key={i}
                             variant="outline"
-                            className="text-[10px] font-normal border-border/50 px-1.5 py-0"
+                            className="text-xs font-normal border-border/50 px-1.5 py-0"
                           >
                             {author}
                           </Badge>
@@ -108,7 +111,7 @@ export default async function DashboardPage() {
                         {paper.authors.length > 3 && (
                           <Badge
                             variant="outline"
-                            className="text-[10px] font-normal border-border/50 px-1.5 py-0"
+                            className="text-xs font-normal border-border/50 px-1.5 py-0"
                           >
                             +{paper.authors.length - 3}
                           </Badge>
@@ -131,9 +134,10 @@ export default async function DashboardPage() {
                         ))}
                       </div>
                     )}
+                    </div>
 
                     {/* Bottom metadata row */}
-                    <div className="flex items-center justify-between pt-2 border-t border-border/30 text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between pt-2 mt-3 border-t border-border/30 text-xs text-muted-foreground">
                       <span className="inline-flex items-center gap-1">
                         <Layers className="h-3 w-3" />
                         {paper.chunkCount} chunk{paper.chunkCount === 1 ? "" : "s"}

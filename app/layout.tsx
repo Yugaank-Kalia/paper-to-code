@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ClerkProvider } from "@clerk/nextjs";
+import { BackToTop } from "@/components/back-to-top";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,10 +18,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: "paper-to-code",
-  description: "Turn academic papers into working PyTorch implementations using RAG and a LLM.",
+  description: "Turn academic papers into working Python implementations using RAG and a LLM.",
   openGraph: {
     title: "paper-to-code",
-    description: "Turn academic papers into working PyTorch implementations using RAG and a LLM.",
+    description: "Turn academic papers into working Python implementations using RAG and a LLM.",
     type: "website",
     images: [
       {
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "paper-to-code",
-    description: "Turn academic papers into working PyTorch implementations using RAG and a local LLM.",
+    description: "Turn academic papers into working Python implementations using RAG and a local LLM.",
     images: ["/open-graph.png"],
   },
 };
@@ -51,6 +52,7 @@ export default function RootLayout({
         className={`${geistMono.variable} ${geistSans.variable} ${geistMono.className} antialiased`}
       >
         <Providers>{children}</Providers>
+        <BackToTop />
       </body>
     </html>
     </ClerkProvider>

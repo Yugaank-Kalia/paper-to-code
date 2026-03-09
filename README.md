@@ -1,13 +1,13 @@
 # paper-to-code
 
-Turn academic papers into working PyTorch implementations. Upload a PDF, TXT, or Markdown paper, and the app extracts the core algorithms, model architecture, and training procedures using RAG + LLM, then generates annotated, runnable code blocks.
+Turn academic papers into working Python implementations. Upload a PDF, TXT, or Markdown paper, and the app extracts the core algorithms, model architecture, and training procedures using RAG + LLM, then generates annotated, runnable code blocks.
 
 ## How it works
 
 1. **Upload** — A paper (PDF / TXT / MD) is uploaded and stored in Supabase Storage.
 2. **Chunk & Embed** — The raw text is split into overlapping chunks and embedded with a Hugging Face sentence-transformer model.
 3. **Retrieve** — At generation time, the most relevant chunks are retrieved via cosine similarity against a fixed implementation-focused query.
-4. **Generate** — The retrieved context is fed to a local [Ollama](https://ollama.com) model, which returns structured JSON code blocks (title, description, PyTorch code).
+4. **Generate** — The retrieved context is fed to a local [Ollama](https://ollama.com) model, which returns structured JSON code blocks (title, description, Python code).
 5. **Cache** — Generated code blocks are persisted in Postgres so repeat visits are instant.
 
 ## Tech stack
@@ -109,3 +109,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | `bun lint` | Run ESLint |
 | `bunx drizzle-kit push` | Push schema to database |
 | `bunx drizzle-kit studio` | Open Drizzle Studio |
+
+## Credits
+
+- Favicon: [Research icons by Eucalyp — Flaticon](https://www.flaticon.com/free-icons/research)

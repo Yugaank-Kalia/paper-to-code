@@ -36,9 +36,8 @@ export async function uploadPaper(
     return { status: "error", message: "No file provided" };
   }
 
-  // check if file exists in papers directory
   const name = file.name;
-  const exists = await db.select().from(papers).where(and(eq(papers.title, name), eq(papers.userId, userId))).limit(1);
+  const exists = await db.select().from(papers).where(and(eq(papers.source, name), eq(papers.userId, userId))).limit(1);
 
   if (exists.length > 0) {
     return { status: "error", message: "File already exists, please upload a different file." };
@@ -91,8 +90,8 @@ export async function uploadPaper(
     await db.insert(papers).values({
       id: paperId,
       userId,
-      title: rawTitle, // Use the original title for the DB
-      source: "local_upload",
+      title: rawTitle,
+      source: name, // original filename used for duplicate detection
       rawText,
     });
 
