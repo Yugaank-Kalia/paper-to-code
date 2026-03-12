@@ -53,8 +53,4 @@ export const auth = betterAuth({
 			trustedProviders: ['github', 'google'],
 		},
 	},
-	trustedOrigins: [
-		'http://localhost:3000',
-		'https://paper-to-code.vercel.app',
-	],
 });
