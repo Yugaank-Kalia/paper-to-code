@@ -1,4 +1,4 @@
-# paper-to-code
+# paper2code
 
 Turn academic papers into working Python implementations. Upload a PDF, TXT, or Markdown paper, and the app extracts the core algorithms, model architecture, and training procedures using RAG + LLM, then generates annotated, runnable code blocks.
 
@@ -17,25 +17,25 @@ Turn academic papers into working Python implementations. Upload a PDF, TXT, or 
 
 ## Roadmap
 
-- [ ] Migrate authentication from Clerk to [better-auth](https://better-auth.com) for self-hosted, dependency-free auth
+- [x] Migrate authentication from Clerk to [better-auth](https://better-auth.com) for self-hosted, dependency-free auth
 - [ ] Add a notification system to alert users when code generation completes, since it can take a while
 
 ## Tech stack
 
-| Layer           | Technology                  |
-| --------------- | --------------------------- |
-| Framework       | Next.js 16 (App Router)     |
-| Auth            | Clerk                       |
-| Database        | PostgreSQL via Drizzle ORM  |
-| File storage    | Supabase Storage            |
-| Embeddings      | Hugging Face Inference API  |
-| Code generation | Ollama (LLM)                |
-| UI              | Tailwind CSS v4 + shadcn/ui |
+| Layer           | Technology                             |
+| --------------- | -------------------------------------- |
+| Framework       | Next.js 16 (App Router)                |
+| Auth            | [better-auth](https://better-auth.com) |
+| Database        | PostgreSQL via Drizzle ORM             |
+| File storage    | Supabase Storage                       |
+| Embeddings      | Hugging Face Inference API             |
+| Code generation | Ollama (LLM)                           |
+| UI              | Tailwind CSS v4 + shadcn/ui            |
 
 ## Prerequisites
 
 - [Bun](https://bun.sh) (or npm / pnpm / yarn)
-- A [Clerk](https://clerk.com) application
+- A [better-auth](https://better-auth.com) instance (self-hosted or cloud)
 - A [Hugging Face](https://huggingface.co) account with an API key
 - A [Supabase](https://supabase.com) project (database + storage bucket)
 - [Ollama](https://ollama.com) running locally with your chosen model pulled or Ollama API setup
@@ -53,9 +53,9 @@ bun install
 Create a `.env.local` file in the project root:
 
 ```env
-# Clerk
-CLERK_SECRET_KEY=sk...
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk...
+# better-auth
+BETTER_AUTH_SECRET=...
+BETTER_AUTH_URL=https://<YOUR_BETTER_AUTH_URL>
 
 # Database (Supabase Postgres connection string)
 DATABASE_URL=postgresql://...
@@ -119,6 +119,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | `bun lint`                | Run ESLint               |
 | `bunx drizzle-kit push`   | Push schema to database  |
 | `bunx drizzle-kit studio` | Open Drizzle Studio      |
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for recent updates.
 
 ## Credits
 
