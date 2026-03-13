@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession, signOut } from '@/lib/auth-client';
+import { useSession } from '@/lib/auth-client';
 import { toast } from 'sonner';
+
 import {
 	AlertDialog,
 	AlertDialogCancel,
@@ -11,9 +12,11 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { ArrowRight, LoaderCircle, Upload } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { useRouter } from 'next/navigation';
 import { uploadPaper } from '@/app/dashboard/actions/upload-paper';
 import { uploadArxiv } from '@/app/dashboard/actions/upload-arxiv';
@@ -168,120 +171,70 @@ export function UploadPaperDialog({ text }: { text: string }) {
 				</AlertDialogHeader>
 
 				{/* Mode toggle */}
-				<div className='flex rounded-lg border border-border overflow-hidden text-sm'>
-					<button
-						type='button'
-						onClick={() => setMode('file')}
-						className={`flex-1 py-1.5 transition-colors ${
-							mode === 'file'
-								? 'bg-primary text-primary-foreground'
-								: 'text-muted-foreground hover:text-foreground'
-						}`}
-					>
-						File Upload
-					</button>
-					<button
-						type='button'
-						onClick={() => setMode('arxiv')}
-						className={`flex-1 py-1.5 transition-colors ${
-							mode === 'arxiv'
-								? 'bg-primary text-primary-foreground'
-								: 'text-muted-foreground hover:text-foreground'
-						}`}
-					>
-						arXiv
-					</button>
-				</div>
+				<Tabs value={mode} onValueChange={(v) => setMode(v as Mode)}>
+					<TabsList className='w-full'>
+						<TabsTrigger
+							value='file'
+							disabled={isLoading}
+							className='flex-1'
+						>
+							File Upload
+						</TabsTrigger>
+						<TabsTrigger
+							value='arxiv'
+							disabled={isLoading}
+							className='flex-1'
+						>
+							arXiv
+						</TabsTrigger>
+					</TabsList>
+				</Tabs>
 
-				{mode === 'file' ? (
-					<form onSubmit={handleUpload} className='space-y-4'>
-						<div className='flex items-center justify-center w-full py-6'>
-							<label
-								htmlFor='paper-upload'
-								className='flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-border rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition'
-							>
-								{isLoading ? (
-									<div className='flex h-full w-full flex-col items-center justify-center gap-2'>
-										<LoaderCircle className='h-6 w-6 animate-spin text-primary' />
-										<p className='text-sm text-muted-foreground'>
-											Uploading...
-										</p>
-									</div>
-								) : (
-									<>
-										<div className='flex flex-col items-center justify-center pt-5 pb-6'>
-											<Upload className='h-8 w-8 text-muted-foreground mb-2' />
+				<div className='min-h-105'>
+					{mode === 'file' ? (
+						<form onSubmit={handleUpload} className='space-y-4'>
+							<div className='flex items-center justify-center w-full'>
+								<label
+									htmlFor='paper-upload'
+									className='flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-border rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition'
+								>
+									{isLoading ? (
+										<div className='flex h-full w-full flex-col items-center justify-center gap-2'>
+											<LoaderCircle className='h-6 w-6 animate-spin text-primary' />
 											<p className='text-sm text-muted-foreground'>
-												{fileName
-													? 'File selected'
-													: 'Click to upload or drag and drop'}
+												Uploading...
 											</p>
-											{fileName && (
-												<p className='text-xs text-primary mt-1 max-w-50 truncate text-center'>
-													{fileName}
-												</p>
-											)}
 										</div>
+									) : (
+										<>
+											<div className='flex flex-col items-center justify-center pt-5 pb-6'>
+												<Upload className='h-8 w-8 text-muted-foreground mb-2' />
+												<p className='text-sm text-muted-foreground'>
+													{fileName
+														? 'File selected'
+														: 'Click to upload or drag and drop'}
+												</p>
+												{fileName && (
+													<p className='text-xs text-primary mt-1 max-w-50 truncate text-center'>
+														{fileName}
+													</p>
+												)}
+											</div>
 
-										<Input
-											id='paper-upload'
-											name='paper'
-											type='file'
-											accept='.pdf,.txt,.md'
-											onChange={handleFileChange}
-											className='hidden'
-											disabled={isLoading}
-										/>
-									</>
-								)}
-							</label>
-						</div>
-
-						<div className='space-y-1.5'>
-							<p className='text-sm text-muted-foreground'>
-								Title{' '}
-								<span className='opacity-50'>(optional)</span>
-							</p>
-							<Input
-								type='text'
-								placeholder='e.g. Attention Is All You Need'
-								value={fileTitle}
-								onChange={(e) => setFileTitle(e.target.value)}
-								disabled={isLoading}
-							/>
-						</div>
-
-						<div className='flex gap-2 justify-end pt-4'>
-							<AlertDialogCancel asChild>
-								<Button disabled={isLoading} variant='outline'>
-									Cancel
-								</Button>
-							</AlertDialogCancel>
-							<Button
-								type='submit'
-								disabled={isLoading || !fileName}
-							>
-								{isLoading ? 'Uploading...' : 'Upload Paper'}
-							</Button>
-						</div>
-					</form>
-				) : (
-					<form onSubmit={handleArxivSubmit} className='space-y-4'>
-						<div className='space-y-3 py-4'>
-							<div className='space-y-1.5'>
-								<p className='text-sm text-muted-foreground'>
-									arXiv URL or paper ID
-								</p>
-								<Input
-									type='text'
-									placeholder='e.g. 2301.00001 or https://arxiv.org/abs/2301.00001'
-									value={arxivInput}
-									onChange={(e) =>
-										setArxivInput(e.target.value)
-									}
-									disabled={isLoading}
-								/>
+											<Input
+												id='paper-upload'
+												name='paper'
+												type='file'
+												accept='.pdf,.txt,.md'
+												onChange={handleFileChange}
+												className='hidden'
+												disabled={isLoading}
+											/>
+										</>
+									)}
+								</label>
 							</div>
+
 							<div className='space-y-1.5'>
 								<p className='text-sm text-muted-foreground'>
 									Title{' '}
@@ -292,37 +245,98 @@ export function UploadPaperDialog({ text }: { text: string }) {
 								<Input
 									type='text'
 									placeholder='e.g. Attention Is All You Need'
-									value={arxivTitle}
+									value={fileTitle}
 									onChange={(e) =>
-										setArxivTitle(e.target.value)
+										setFileTitle(e.target.value)
 									}
 									disabled={isLoading}
 								/>
 							</div>
-						</div>
 
-						<div className='flex gap-2 justify-end pt-4'>
-							<AlertDialogCancel asChild>
-								<Button disabled={isLoading} variant='outline'>
-									Cancel
+							<div className='flex gap-2 justify-end pt-4'>
+								<AlertDialogCancel asChild>
+									<Button
+										disabled={isLoading}
+										variant='outline'
+									>
+										Cancel
+									</Button>
+								</AlertDialogCancel>
+								<Button
+									type='submit'
+									disabled={isLoading || !fileName}
+								>
+									{isLoading
+										? 'Uploading...'
+										: 'Upload Paper'}
 								</Button>
-							</AlertDialogCancel>
-							<Button
-								type='submit'
-								disabled={isLoading || !arxivInput.trim()}
-							>
-								{isLoading ? (
-									<>
-										<LoaderCircle className='h-4 w-4 animate-spin mr-1' />{' '}
-										Importing...
-									</>
-								) : (
-									'Import Paper'
-								)}
-							</Button>
-						</div>
-					</form>
-				)}
+							</div>
+						</form>
+					) : (
+						<form
+							onSubmit={handleArxivSubmit}
+							className='flex flex-col justify-between min-h-100.5'
+						>
+							<div className='space-y-3 pt-8'>
+								<div className='space-y-1.5'>
+									<p className='text-sm text-muted-foreground'>
+										arXiv URL or paper ID
+									</p>
+									<Input
+										type='text'
+										placeholder='e.g. 2301.00001 or https://arxiv.org/abs/2301.00001'
+										value={arxivInput}
+										onChange={(e) =>
+											setArxivInput(e.target.value)
+										}
+										disabled={isLoading}
+									/>
+								</div>
+								<div className='space-y-1.5'>
+									<p className='text-sm text-muted-foreground'>
+										Title{' '}
+										<span className='opacity-50'>
+											(optional)
+										</span>
+									</p>
+									<Input
+										type='text'
+										placeholder='e.g. Attention Is All You Need'
+										value={arxivTitle}
+										onChange={(e) =>
+											setArxivTitle(e.target.value)
+										}
+										disabled={isLoading}
+									/>
+								</div>
+							</div>
+
+							<div className='flex gap-2 justify-end pt-4'>
+								<AlertDialogCancel asChild>
+									<Button
+										disabled={isLoading}
+										variant='outline'
+									>
+										Cancel
+									</Button>
+								</AlertDialogCancel>
+								<Button
+									type='submit'
+									disabled={isLoading || !arxivInput.trim()}
+								>
+									{isLoading ? (
+										<>
+											<LoaderCircle className='h-4 w-4 animate-spin mr-1' />
+											Importing...
+										</>
+									) : (
+										'Import Paper'
+									)}
+								</Button>
+							</div>
+						</form>
+					)}
+				</div>
 			</AlertDialogContent>
 		</AlertDialog>
 	);

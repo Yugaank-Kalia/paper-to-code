@@ -2,7 +2,13 @@
 
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
-import { LogOut, Settings, ChevronDown } from 'lucide-react';
+import {
+	LogOut,
+	Settings,
+	ChevronDown,
+	LayoutDashboard,
+	Bell,
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
 	Popover,
@@ -11,10 +17,12 @@ import {
 } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
+import { ThemeToggle } from './theme-toggle';
 
 export default function UserButton() {
 	const { data: session, isPending } = authClient.useSession();
 	const router = useRouter();
+	const [open, setOpen] = useState(false);
 
 	if (isPending) return null;
 	if (!session) return null;
@@ -34,7 +42,10 @@ export default function UserButton() {
 		router.push('/');
 	}
 
-	const [open, setOpen] = useState(false);
+	function navigate(path: string) {
+		setOpen(false);
+		router.push(path);
+	}
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -82,22 +93,54 @@ export default function UserButton() {
 
 				<div className='p-1'>
 					<button
-						onClick={() => {
-							router.push('/settings');
-							setOpen(false);
-						}}
-						className='cursor-pointer flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-xs hover:bg-muted transition-colors text-left'
+						onClick={() => navigate('/settings')}
+						className='cursor-pointer flex w-full items-center gap-2 rounded-md p-3 hover:bg-muted transition-colors text-left'
 					>
 						<Settings className='h-3.5 w-3.5 text-muted-foreground' />
 						<span className='text-accent-foreground text-sm'>
 							Settings
 						</span>
 					</button>
+
+					{/* Mobile-only items */}
+					<div className='sm:hidden'>
+						<button
+							onClick={() => navigate('/dashboard')}
+							className='cursor-pointer flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 hover:bg-muted transition-colors text-left'
+						>
+							<LayoutDashboard className='h-3.5 w-3.5 text-muted-foreground' />
+							<span className='text-accent-foreground text-sm'>
+								Dashboard
+							</span>
+						</button>
+
+						<button
+							onClick={() => navigate('/notifications')}
+							className='cursor-pointer flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 hover:bg-muted transition-colors text-left'
+						>
+							<Bell className='h-3.5 w-3.5 text-muted-foreground' />
+							<span className='text-accent-foreground text-sm'>
+								Notifications
+							</span>
+						</button>
+
+						<div className='flex items-center gap-2 rounded-md px-2.5 py-2 hover:bg-muted transition-colors cursor-pointer'>
+							<span className='text-accent-foreground text-sm flex-1'>
+								Theme
+							</span>
+							<ThemeToggle />
+						</div>
+					</div>
+				</div>
+
+				<Separator />
+
+				<div className='p-1'>
 					<button
 						onClick={handleSignOut}
-						className='cursor-pointer flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-xs hover:bg-destructive/10 text-destructive transition-colors text-left'
+						className='cursor-pointer flex w-full items-center gap-2 rounded-md p-3 hover:bg-destructive/10 transition-colors text-left'
 					>
-						<LogOut className='h-3.5 w-3.5' />
+						<LogOut className='h-3.5 w-3.5 text-destructive' />
 						<span className='text-destructive text-sm'>
 							Sign out
 						</span>
